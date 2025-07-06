@@ -1,2 +1,63 @@
 services:
-  
+  mysql:
+    container_name: mysql_heimdall
+    image: mysql
+    restart: unless-stopped
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./data/scripts/mysql:/docker-entrypoint-initdb.d/
+    env_file:
+      - ./src/.env
+    networks:
+      backend:
+        ipv4_address: 192.168.10.2
+    
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb_heimdall
+    restart: unless-stopped
+    env_file:
+      - ./src/.env
+    volumes:
+      - ./data/mongodb:/data/db
+      - ./data/scripts/mongodb:/docker-entrypoint-initdb.d/
+    networks:
+      backend:
+        ipv4_address: 192.168.10.3
+
+  php:
+    container_name: php_heimdall
+    image: felipecaue/php-fpm-composer:1.0.0
+    restart: unless-stopped
+    volumes:
+      - ./src/:/var/www/html
+    depends_on:
+      - mysql
+      - mongodb
+    networks:
+      backend:
+        ipv4_address: 192.168.10.4
+
+  nginx:
+    container_name: nginx_heimdall
+    image: nginx:1.25
+    restart: unless-stopped
+    ports:
+      - "80:80"  
+      - "443:443"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - php
+    networks:
+      backend:
+        ipv4_address: 192.168.10.5
+
+networks:
+  backend:
+    name: rede_heildall
+    driver: bridge
+    ipam:
+      config: 
+        - subnet: 192.168.10.0/24
