@@ -9,7 +9,7 @@
 
 # CARREGAR AS VARIAVEIS DO .env
 set -o allexport
-source ./src/.env
+source .env
 set +o allexport
 
 # LOGIN NO DOCKER HUB

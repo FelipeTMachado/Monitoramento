@@ -7,7 +7,7 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./data/scripts/mysql:/docker-entrypoint-initdb.d/
     env_file:
-      - ./src/.env
+      - ./.env
     networks:
       backend:
         ipv4_address: 192.168.10.2
@@ -17,7 +17,7 @@ services:
     container_name: mongodb_heimdall
     restart: unless-stopped
     env_file:
-      - ./src/.env
+      - ./.env
     volumes:
       - ./data/mongodb:/data/db
       - ./data/scripts/mongodb:/docker-entrypoint-initdb.d/
@@ -30,10 +30,12 @@ services:
     image: felipecaue/php-fpm-composer:1.0.0
     restart: unless-stopped
     volumes:
-      - ./src/:/var/www/html
+      - ./src:/var/www/html
     depends_on:
       - mysql
       - mongodb
+    env_file:
+      - ./.env
     networks:
       backend:
         ipv4_address: 192.168.10.4
