@@ -1,5 +1,8 @@
 FROM php:8.2.28-fpm-bookworm
 
+RUN apt update -y 
+RUN apt install -y git curl unzip
+
 RUN docker-php-ext-install pdo pdo_mysql
 
 RUN pecl install mongodb \
